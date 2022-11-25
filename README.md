@@ -1,4 +1,4 @@
-# StilTreat
+# SlitTreat
 
 See [Licence](https://github.com/Alexey-Stupishin/StilTreat/blob/main/LICENSE)
 
