@@ -1,3 +1,21 @@
+;
+; SlitTreat_widget
+; IDL widget to analyze parameters of jet-like events using sequential images.
+; 
+; Call:
+;   SlitTreat_widget
+;
+; Read Tutorial for details (https://github.com/Alexey-Stupishin/StilTreat/blob/main/SlitTreat%20Tutorial.pdf).
+; 
+; (c) Alexey G. Stupishin, Saint Petersburg State University, Saint Petersburg, Russia, 2021-2022
+;     mailto:agstup@yandex.ru
+;
+;--------------------------------------------------------------------------;
+;     \|/     Set the Controls for the Heart of the Sun           \|/      ;
+;    --O--        Pink Floyd, "A Saucerful Of Secrets", 1968     --O--     ;
+;     /|\                                                         /|\      ;  
+;--------------------------------------------------------------------------;
+;
 ;----------------------------------------------------------------------------------
 pro ass_slit_widget_save_as, save_proj = save_proj
 compile_opt idl2
