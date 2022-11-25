@@ -14,3 +14,4 @@ Please read [Tutorial](https://github.com/Alexey-Stupishin/StilTreat/blob/main/S
 
 ## Update History
 * 23 Nov 2022: Create
+* 25 Nov 2022: Release v.1.3.22.1125 (rev.662)
