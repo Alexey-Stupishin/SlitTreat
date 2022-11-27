@@ -1,6 +1,8 @@
 ;
 ; SlitTreat_widget
 ; IDL widget to analyze parameters of jet-like events using sequential images.
+;
+; v 1.3.22.1125 (rev.662)
 ; 
 ; Call:
 ;   SlitTreat_widget
