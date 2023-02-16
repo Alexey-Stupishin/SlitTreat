@@ -116,6 +116,7 @@ pro ass_slit_widget_show_image, mode = mode, drag = drag
 compile_opt idl2
 
 common G_ASS_SLIT_WIDGET, global
+common G_ASS_SLIT_WIDGET_SET, settings
 
 if global['data_list'] eq !NULL then return
 sz = size(global['data_list'])
@@ -197,7 +198,6 @@ p = global['currpos']
 dat_range = global['dat_range']
 win_range = global['win_range']
 if global['byte_info', p] eq 0 || ~drag then begin
-    base = dblarr(picsize[0], picsize[1])
     if global['drawmode'] eq 'ACTSIZE' then begin
         res = global['data_list', dat_range[0, 0]:dat_range[0, 1], dat_range[1, 0]:dat_range[1, 1], p]
     endif else begin
@@ -205,13 +205,22 @@ if global['byte_info', p] eq 0 || ~drag then begin
         coef = global['coef']
         res = bilinear(global['data_list', dat_range[0, 0]:dat_range[0, 1], dat_range[1, 0]:dat_range[1, 1], p], indgen(newsize[0])*coef, indgen(newsize[1])*coef)
     endelse
-    base[win_range[0, 0]:win_range[0, 1], win_range[1, 0]:win_range[1, 1]] = res    
-    global['byte_list', *, *, p] = bytscl(base)
+    base0 = dblarr(picsize[0], picsize[1])
+    base0[win_range[0, 0]:win_range[0, 1], win_range[1, 0]:win_range[1, 1]] = res
+    scbase = bytscl(base0)
+    if settings['backwhite'] then begin    
+        base = bytarr(picsize[0], picsize[1]) + 255
+        base[win_range[0, 0]:win_range[0, 1], win_range[1, 0]:win_range[1, 1]] = scbase[win_range[0, 0]:win_range[0, 1], win_range[1, 0]:win_range[1, 1]]
+        scbase = base
+    endif    
+    global['byte_list', *, *, p] = scbase
     global['byte_info', p] = 1
 end
 
 asw_control, 'IMAGE', GET_VALUE = drawID
 WSET, drawID
+!p.background = settings['colorback']
+!P.CHARSIZE = settings['charsize']
 device, decomposed = 0
 loadct, 0, /silent
 
@@ -227,7 +236,11 @@ x_arg = xrange
 yrange = [y0, y1]
 y_arg = yrange
 
-tvplot_as, global['byte_list', *, *, p], x_arg, y_arg, xrange = xrange, yrange = yrange, xmargin = global['xmargimg'], ymargin = global['ymargimg'], xtitle = 'arcsec', ytitle = 'arcsec', scale = 0
+title = asu_lang_convert(settings['cyrillic'], ' ”гл. с.', 'arcsec') ; 1252 codepage
+asu_tvplot_as, global['byte_list', *, *, p], x_arg, y_arg, xrange = xrange, yrange = yrange $
+                , xmargin = global['xmargimg'], ymargin = global['ymargimg'] $
+                , color = settings['colorplot'] $
+                , xtitle = title, ytitle = title, scale = 0
 
 hideall = widget_info(asw_getctrl('HIDEALL'), /BUTTON_SET)
 hidemark = widget_info(asw_getctrl('HIDEAPPR'), /BUTTON_SET)

@@ -665,18 +665,39 @@ end
 
 
 ;----------------------------------------------------------------------------------
-pro SlitTreat_widget
+pro SlitTreat_widget, cyr = cyr, charsize = charsize, backwhite = backwhite
 
 common G_ASS_SLIT_WIDGET, global
+common G_ASS_SLIT_WIDGET_SET, settings
 common G_ASS_SLIT_WIDGET_PREF, pref
 common G_ASW_WIDGET, asw_widget
 
 resolve_routine,'slittreat_widget_data',/compile_full_file, /either
 resolve_routine,'slittreat_widget_slit',/compile_full_file, /either
+resolve_routine,'asu_cyrillic_convert',/compile_full_file, /either
+
+asu_cyrillic_init
 
 asw_widget = hash()
 global = hash()
 pref = hash()
+settings = hash()
+
+if n_elements(cyr) ne 0 then cyr = 1 else cyr = 0 
+if ~keyword_set(charsize) then charsize = 1 
+if n_elements(backwhite) eq 0 then begin
+    settings['backwhite'] = 0
+    settings['colorback'] = '000000'x
+    settings['colorplot'] = 'FFFFFF'x
+endif else begin
+    settings['backwhite'] = 1
+    settings['colorback'] = 'FFFFFF'x
+    settings['colorplot'] = '000000'x
+endelse 
+
+settings['charsize'] = charsize
+settings['cyrillic'] = cyr
+
 global['proj_name'] = ''
 global['fromfile'] = ''
 global['tofile'] = ''
@@ -793,7 +814,7 @@ mainrow = WIDGET_BASE(base, /row)
         
     slitcol = WIDGET_BASE(mainrow, /column, /base_align_left) ;xsize = slitsize[0])
         ;fluxhead = WIDGET_LABEL(slitcol, VALUE = 'Flux Dynamics', XSIZE = slitsize[0], UNAME = 'FLUXTEXT', UVALUE = 'FLUXTEXT', /align_center)
-        fluximage = WIDGET_DRAW(slitcol, GRAPHICS_LEVEL = 0, UNAME = 'FLUX', UVALUE = 'FLUX', XSIZE = slitsize[0], YSIZE = slitsize[1], /BUTTON_EVENTS)
+        fluximage = WIDGET_DRAW(slitcol, GRAPHICS_LEVEL = 0, UNAME = 'FLUX', UVALUE = 'FLUX', XSIZE = slitsize[0], YSIZE = slitsize[1])
         tdcoords = WIDGET_LABEL(slitcol, VALUE = '', XSIZE = slitsize[0], UNAME = 'TDCOORDS', UVALUE = 'TDCOORDS', /align_center)
         slitimage = WIDGET_DRAW(slitcol, GRAPHICS_LEVEL = 0, UNAME = 'SLIT', UVALUE = 'SLIT', XSIZE = slitsize[0], YSIZE = slitsize[1], /BUTTON_EVENTS)
         markrow = WIDGET_BASE(slitcol, /row)

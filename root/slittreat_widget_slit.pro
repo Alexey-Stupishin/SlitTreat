@@ -143,6 +143,7 @@ pro ass_slit_widget_show_slit
 compile_opt idl2
 
 common G_ASS_SLIT_WIDGET, global
+common G_ASS_SLIT_WIDGET_SET, settings
 
 asw_control, 'SLIT', GET_VALUE = drawID
 asw_control, 'FLUX', GET_VALUE = fluxID
@@ -160,7 +161,9 @@ if global['timedist'] eq !NULL then begin
 endif
 
 WSET, drawID
-!p.background = '000000'x
+!P.FONT = -1
+!P.CHARSIZE = settings['charsize']
+!p.background = settings['colorback']
 device, decomposed = 0
 loadct, 0, /silent
 
@@ -177,19 +180,27 @@ y_arg = asu_linspace(0, yrange[1], sz[2])
 acttime = widget_info(asw_getctrl('ACTTIME'), /BUTTON_SET)
 p =  ass_slit_widget_to_timescale(global['currpos']/60d * global['cadence'])
 
+ytitle = asu_lang_convert(settings['cyrillic'], ' Расстояние, Мм', 'Distance, Mm') ; 1252 codepage
 if acttime then begin
     x_arg = global['jd_list']
     xrange = [x_arg[0], x_arg[-1]]
     xtickinterval = 1d/24d/60d * ceil((xrange[1] - xrange[0])*24d*60d /10d)
-    tvplot_as, td0, x_arg, y_arg, xrange = xrange, yrange = yrange $
+    xtitle = asu_lang_convert(settings['cyrillic'], ' Время, ЧЧ:ММ', 'Time, HH:MM')
+    asu_tvplot_as, td0, x_arg, y_arg, xrange = xrange, yrange = yrange $
         , xtickformat='asu_julday_tick', xtickinterval = xtickinterval $
-        , xmargin = global['xmargin'], ymargin = global['ymargin'], xtitle = 'Time, HH:MM', ytitle = 'Distance, Mm'
+        , xmargin = global['xmargin'], ymargin = global['ymargin'] $
+        , color = settings['colorplot'] $
+        , xtitle = xtitle $
+        , ytitle = ytitle
 endif else begin
     xrange = [0, dt_min]
     x_arg = asu_linspace(0, xrange[1], sz[1])
-    tvplot_as, td0, x_arg, y_arg, xrange = xrange, yrange = yrange $
+    xtitle = asu_lang_convert(settings['cyrillic'], ' Время, мин', 'Time, min')
+    asu_tvplot_as, td0, x_arg, y_arg, xrange = xrange, yrange = yrange $
         , xmargin = global['xmargin'], ymargin = global['ymargin'] $
-        , xtitle = 'Time, min', ytitle = 'Distance, Mm'
+        , color = settings['colorplot'] $
+        , xtitle = xtitle $
+        , ytitle = ytitle
 end
 
 device, decomposed = 1
@@ -201,8 +212,9 @@ for k = 0, slist.Count()-1 do begin
     crd0 = crds.first
     crd1 = crds.second
     speed = ass_slit_widget_get_speed(crd0, crd1)
-    sstr = strcompress(string(abs(speed), format = '(%"%5d")'), /remove_all) + ' km/s'
-    
+    kms = asu_lang_convert(settings['cyrillic'], ' км/с', 'km/s') 
+    sstr = strcompress(string(abs(speed), format = '(%"%5d")'), /remove_all) + kms
+        
     crd0[0] =  ass_slit_widget_to_timescale(crd0[0])
     crd1[0] =  ass_slit_widget_to_timescale(crd1[0])
     
@@ -236,7 +248,8 @@ asw_control, 'TDTO', SET_VALUE = asu_extract_time(ind1.date_obs, out_style = 'as
 asw_control, 'TDCOORDS', SET_VALUE = string(xy0[0], xy0[1], xy1[0], xy1[1], FORMAT = '(%"(%d\x22, %d\x22)   -   (%d\x22, %d\x22)")') 
 
 WSET, fluxID
-!p.background = '000000'x
+!P.CHARSIZE = settings['charsize']
+!p.background = settings['colorback']
 device, decomposed = 1
 
 str = global['straight']
@@ -248,15 +261,16 @@ slit = str[from:to, *, *]
 flux_p = total(slit, 1)
 flux = total(flux_p, 1)
 flux = flux/flux[0]
+ytitle = asu_lang_convert(settings['cyrillic'], ' Отн. поток, -', 'Rel. Flux, -') ; 1252 codepage
 if acttime then begin
     plot, x_arg, flux, xrange = xrange, xstyle = 1, xtickformat='asu_julday_tick', xtickinterval = xtickinterval $
         , xmargin = global['xmargin'], ymargin = global['ymargin'], xgridstyle = 1, xticklen = 1 $
 ;        , xgridstyle = 1 $
-        , thick = 1, color = 'FFFFFF'x, xtitle = 'Time, HH:MM', ytitle = 'Rel. Flux, -'
+        , thick = 1, color = settings['colorplot'], xtitle = xtitle, ytitle = ytitle
 endif else begin
     plot, x_arg, flux, xrange = xrange, xstyle = 1 $
         , xmargin = global['xmargin'], ymargin = global['ymargin'], xgridstyle = 1, xticklen = 1 $
-        , thick = 1, color = 'FFFFFF'x, xtitle = 'Time, min', ytitle = 'Rel. Flux, -'
+        , thick = 1, color = settings['colorplot'], xtitle = xtitle, ytitle = ytitle
 endelse
     
 oplot, [p, p], [0, yrange[1]], color = 'FF0000'x, thick = 1.5
