@@ -93,9 +93,10 @@ function ass_slit_widget_convert, xy, mode = mode
 compile_opt idl2
 
 common G_ASS_SLIT_WIDGET, global
+common G_ASS_SLIT_WIDGET_SET, settings
 
-xmargpix = global['xmargimg'] * !d.x_ch_size
-ymargpix = global['ymargimg'] * !d.y_ch_size
+xmargpix = global['xmargimg'] * !d.x_ch_size * settings['charsize']
+ymargpix = global['ymargimg'] * !d.y_ch_size * settings['charsize']
 
 ind0 = global['data_ind', 0]
 out = dblarr(2)
@@ -126,8 +127,8 @@ if n_elements(drag) eq 0 then drag = 0
 if global['xy_rt_dat'] eq !NULL && (n_elements(mode) gt 0 && mode eq 'SELWIN') then mode = 'FITWIN'
 
 winsize = global['winsize']
-xmargpix = global['xmargimg'] * !d.x_ch_size
-ymargpix = global['ymargimg'] * !d.y_ch_size
+xmargpix = global['xmargimg'] * !d.x_ch_size * settings['charsize']
+ymargpix = global['ymargimg'] * !d.y_ch_size * settings['charsize']
 picsize = [winsize[0] - xmargpix[0] - xmargpix[1], winsize[1] - ymargpix[0] - ymargpix[1]]
 ind0 = global['data_ind', 0]
 

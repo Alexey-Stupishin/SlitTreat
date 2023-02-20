@@ -146,6 +146,15 @@ endelse
 end
 
 ;----------------------------------------------------------------------------------
+pro ass_slit_widget_update_all, event
+compile_opt idl2
+
+ass_slit_widget_make_bounds
+ass_slit_widget_update_td
+
+end
+
+;----------------------------------------------------------------------------------
 pro ass_slit_widget_buttons_event, event
 compile_opt idl2
 
@@ -322,6 +331,7 @@ case eventval of
             1: result = DIALOG_MESSAGE('Please select both first and last files!', title = 'SlitTreat Error', /ERROR)
             2: result = DIALOG_MESSAGE('Not enough files found!', title = 'SlitTreat Error', /ERROR)
             else: begin
+                WIDGET_CONTROL, /HOURGLASS
                 sz = size(global['data_list'])
                 global['cadence'] = cadence
                 global['jd_list'] = jd_list
@@ -576,7 +586,11 @@ case eventval of
         ass_slit_widget_get_timedist
         ass_slit_widget_show_slit
     end
-         
+    
+    'EXPORTTEXT' : begin
+        ass_slit_widget_export
+    end
+    
     'EXPORT' : begin
         if global['straight'] eq !NULL then begin
             result = DIALOG_MESSAGE('Nothing to export!', title = 'SlitTreat Error', /ERROR)
@@ -605,6 +619,16 @@ case eventval of
         
         WIDGET_CONTROL, /HOURGLASS
         ass_slit_widget_export_sav
+    end
+    
+    'IMPSAV' : begin
+        if global['data_list'] eq !NULL then begin
+            result = DIALOG_MESSAGE('No data to apply!', title = 'SlitTreat Error', /ERROR)
+            return
+        endif    
+        
+        WIDGET_CONTROL, /HOURGLASS
+        ass_slit_widget_import_sav
     end
     
 endcase
@@ -809,8 +833,11 @@ mainrow = WIDGET_BASE(base, /row)
         exportimage = WIDGET_BUTTON(ctrlcol, VALUE = 'Export Image ...', UVALUE = 'EXPIMAGE', XSIZE = 120)
         exportflux = WIDGET_BUTTON(ctrlcol, VALUE = 'Export Flux ...', UVALUE = 'EXPFLUX', XSIZE = 110)
         exportbutton = WIDGET_BUTTON(ctrlcol, VALUE = 'Export T-D ...', UVALUE = 'EXPORT', XSIZE = 110)
+        exportcheckrow = WIDGET_BASE(ctrlcol, /column, /Nonexclusive)
+            exportaddtextcheck = WIDGET_BUTTON(exportcheckrow, VALUE = 'Add Text Info', UNAME = 'EXPORTTEXT', UVALUE = 'EXPORTTEXT', XSIZE = 120)
         dummy = WIDGET_LABEL(ctrlcol, VALUE = ' ', XSIZE = 40)
         expsavbutton = WIDGET_BUTTON(ctrlcol, VALUE = 'T-D to SAV...', UVALUE = 'EXPSAV', XSIZE = 110)
+        impsavbutton = WIDGET_BUTTON(ctrlcol, VALUE = 'Apply Slit from SAV...', UVALUE = 'IMPSAV', XSIZE = 110)
         
     slitcol = WIDGET_BASE(mainrow, /column, /base_align_left) ;xsize = slitsize[0])
         ;fluxhead = WIDGET_LABEL(slitcol, VALUE = 'Flux Dynamics', XSIZE = slitsize[0], UNAME = 'FLUXTEXT', UVALUE = 'FLUXTEXT', /align_center)

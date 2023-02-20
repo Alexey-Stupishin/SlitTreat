@@ -80,11 +80,12 @@ function ass_slit_widget_slit_convert, xy, mode = mode
 compile_opt idl2
 
 common G_ASS_SLIT_WIDGET, global
+common G_ASS_SLIT_WIDGET_SET, settings
 
 slitsize = global['slitsize']
 
-xmargpix = global['xmargin'] * !d.x_ch_size
-ymargpix = global['ymargin'] * !d.y_ch_size
+xmargpix = global['xmargin'] * !d.x_ch_size * settings['charsize']
+ymargpix = global['ymargin'] * !d.y_ch_size * settings['charsize']
 
 xplotpix = slitsize[0] - xmargpix[0] - xmargpix[1] 
 yplotpix = slitsize[1] - ymargpix[0] - ymargpix[1] 
@@ -275,6 +276,9 @@ endelse
     
 oplot, [p, p], [0, yrange[1]], color = 'FF0000'x, thick = 1.5
 
+xtext = xrange[0] + (xrange[1]-xrange[0])*0.05
+;XYOUTS, xtext, yrange[1]-3, 'test text', color = 'FFFFFF'x, alignment = 1.0, charsize = 1.8, charthick = 1.5 
+
 end
 
 ;----------------------------------------------------------------------------------
@@ -300,13 +304,20 @@ last = global['data_ind', -1]
 
 szd = size(global['data_list'])
 
-xy = global['approx']
-sz = size(xy)
-slit_crd_from = xy[*, 0]
-slit_crd_to = xy[*, sz[2]-1]
+reper_pts = global['reper_pts'] 
+points = global['points']
+
+approx = global['approx']
+sz = size(approx)
+slit_crd_from = approx[*, 0]
+slit_crd_to = approx[*, sz[2]-1]
 
 slit_time_from = first_ind.date_obs
 slit_time_to = last.date_obs
+
+wavelength = first_ind.wavelnth
+telescope = first_ind.telescop
+instrument = first_ind.instrume
 
 half_width = global['slitwidth']
 arcsec = first_ind.cdelt1
@@ -335,10 +346,37 @@ if slist.Count() gt 0 then begin
     end
 endif
 
-save, filename = file, timedist, slit_crd_from, slit_crd_to, slit_time_from, slit_time_to, dist_step, time_step, half_width, half_width_arc, mode, jets
+save, filename = file, wavelength, telescope, instrument, timedist, slit_crd_from, slit_crd_to, slit_time_from, slit_time_to $
+    , dist_step, time_step, half_width, half_width_arc, mode, jets, reper_pts, points, approx, slist
 
 pref['expsav_path'] = path
 save, filename = pref['pref_path'], pref
+
+end
+
+;----------------------------------------------------------------------------------
+pro ass_slit_widget_import_sav
+compile_opt idl2
+
+common G_ASS_SLIT_WIDGET, global
+common G_ASS_SLIT_WIDGET_PREF, pref
+common G_ASW_WIDGET, asw_widget
+
+path = ''
+if pref.hasKey('expsav_path') then begin
+    path = pref['expsav_path']
+endif
+filename = dialog_pickfile(DEFAULT_EXTENSION = 'sav', FILTER = ['*.sav'], GET_PATH = path, PATH = path, file = global['proj_name'], /read, /must_exist)
+if filename eq '' then return
+
+restore, filename
+
+global['reper_pts'] = reper_pts 
+global['approx'] = approx
+global['speed_list'] = slist
+global['points'] = points
+
+ass_slit_widget_update_all
 
 end
 
