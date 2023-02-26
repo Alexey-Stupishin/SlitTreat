@@ -207,6 +207,12 @@ end
 device, decomposed = 1
 oplot, [p, p], [0, yrange[1]], color = 'FF0000'x, thick = 1.5
 
+aster_size = 0.8
+jet_line_color = '00FF00'x
+jet_text_color = '0000FF'x
+jet_text_charsize = 1.8
+jet_thick = 1.5
+
 slist = global['speed_list']
 for k = 0, slist.Count()-1 do begin
     crds = slist[k]
@@ -219,18 +225,21 @@ for k = 0, slist.Count()-1 do begin
     crd0[0] =  ass_slit_widget_to_timescale(crd0[0])
     crd1[0] =  ass_slit_widget_to_timescale(crd1[0])
     
-    oplot, [crd0[0], crd1[0]], [crd0[1], crd1[1]], color = '00FF00'x, thick = 1.5
-    oplot, [crd0[0]], [crd0[1]], psym = 2, symsize = 1.5, thick = 1.5, color = '00FF00'x
-    oplot, [crd1[0]], [crd1[1]], psym = 2, symsize = 1.5, thick = 1.5, color = '00FF00'x
+    oplot, [crd0[0], crd1[0]], [crd0[1], crd1[1]], color = jet_line_color, thick = jet_thick
+    oplot, [crd0[0]], [crd0[1]], psym = 2, symsize = aster_size, thick = jet_thick, color = jet_line_color
+    oplot, [crd1[0]], [crd1[1]], psym = 2, symsize = aster_size, thick = jet_thick, color = jet_line_color
     
     align = speed gt 0 ? 1.0 : 0.0
-    XYOUTS, (crd0[0]+crd1[0])/2, (crd0[1]+crd1[1])/2, sstr, color = '0000FF'x, alignment = align, charsize = 1.8, charthick = 1.5 
+    XYOUTS, (crd0[0]+crd1[0])/2, (crd0[1]+crd1[1])/2, sstr, color = jet_text_color, alignment = align, charsize = jet_text_charsize, charthick = jet_thick 
 endfor
+
+xtext = xrange[0] + (xrange[1]-xrange[0])*0.03
+XYOUTS, xtext, yrange[1], 'test text', color = 'FFFFFF'x, alignment = 0.0, charsize = jet_text_charsize, charthick = jet_thick
 
 if global['speed_first_pt'] ne !NULL then begin
     crd0 = global['speed_first_pt']
     crd0[0] =  ass_slit_widget_to_timescale(crd0[0])
-    oplot, [crd0[0]], [crd0[1]], psym = 2, symsize = 1.5, thick = 1.5, color = '00FF00'x
+    oplot, [crd0[0]], [crd0[1]], psym = 2, symsize = aster_size, thick = jet_thick, color = jet_line_color
 endif
 
 xy = global['approx']
@@ -274,10 +283,7 @@ endif else begin
         , thick = 1, color = settings['colorplot'], xtitle = xtitle, ytitle = ytitle
 endelse
     
-oplot, [p, p], [0, yrange[1]], color = 'FF0000'x, thick = 1.5
-
-xtext = xrange[0] + (xrange[1]-xrange[0])*0.05
-;XYOUTS, xtext, yrange[1]-3, 'test text', color = 'FFFFFF'x, alignment = 1.0, charsize = 1.8, charthick = 1.5 
+oplot, [p, p], [0, yrange[1]], color = 'FF0000'x, thick = 1.5 ; vertical frame line
 
 end
 
