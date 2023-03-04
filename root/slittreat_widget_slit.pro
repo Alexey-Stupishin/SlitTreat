@@ -145,6 +145,7 @@ compile_opt idl2
 
 common G_ASS_SLIT_WIDGET, global
 common G_ASS_SLIT_WIDGET_SET, settings
+common G_ASS_SLIT_WIDGET_CYRILLIC_STRINGS, slit_treat_cyr_str
 
 asw_control, 'SLIT', GET_VALUE = drawID
 asw_control, 'FLUX', GET_VALUE = fluxID
@@ -181,12 +182,12 @@ y_arg = asu_linspace(0, yrange[1], sz[2])
 acttime = widget_info(asw_getctrl('ACTTIME'), /BUTTON_SET)
 p =  ass_slit_widget_to_timescale(global['currpos']/60d * global['cadence'])
 
-ytitle = asu_lang_convert(settings['cyrillic'], ' Расстояние, Мм', 'Distance, Mm') ; 1252 codepage
+ytitle = asu_lang_convert(settings['cyrillic'], slit_treat_cyr_str['dist_Mm'], 'Distance, Mm') ; 1252 codepage
 if acttime then begin
     x_arg = global['jd_list']
     xrange = [x_arg[0], x_arg[-1]]
     xtickinterval = 1d/24d/60d * ceil((xrange[1] - xrange[0])*24d*60d /10d)
-    xtitle = asu_lang_convert(settings['cyrillic'], ' Время, ЧЧ:ММ', 'Time, HH:MM')
+    xtitle = asu_lang_convert(settings['cyrillic'], slit_treat_cyr_str['time_HHMM'], 'Time, HH:MM')
     asu_tvplot_as, td0, x_arg, y_arg, xrange = xrange, yrange = yrange $
         , xtickformat='asu_julday_tick', xtickinterval = xtickinterval $
         , xmargin = global['xmargin'], ymargin = global['ymargin'] $
@@ -196,7 +197,7 @@ if acttime then begin
 endif else begin
     xrange = [0, dt_min]
     x_arg = asu_linspace(0, xrange[1], sz[1])
-    xtitle = asu_lang_convert(settings['cyrillic'], ' Время, мин', 'Time, min')
+    xtitle = asu_lang_convert(settings['cyrillic'], slit_treat_cyr_str['time_min'], 'Time, min')
     asu_tvplot_as, td0, x_arg, y_arg, xrange = xrange, yrange = yrange $
         , xmargin = global['xmargin'], ymargin = global['ymargin'] $
         , color = settings['colorplot'] $
@@ -219,7 +220,7 @@ for k = 0, slist.Count()-1 do begin
     crd0 = crds.first
     crd1 = crds.second
     speed = ass_slit_widget_get_speed(crd0, crd1)
-    kms = asu_lang_convert(settings['cyrillic'], ' км/с', 'km/s') 
+    kms = asu_lang_convert(settings['cyrillic'], slit_treat_cyr_str['speed_kms'], 'km/s') 
     sstr = strcompress(string(abs(speed), format = '(%"%5d")'), /remove_all) + kms
         
     crd0[0] =  ass_slit_widget_to_timescale(crd0[0])
@@ -271,7 +272,7 @@ slit = str[from:to, *, *]
 flux_p = total(slit, 1)
 flux = total(flux_p, 1)
 flux = flux/flux[0]
-ytitle = asu_lang_convert(settings['cyrillic'], ' Отн. поток, -', 'Rel. Flux, -') ; 1252 codepage
+ytitle = asu_lang_convert(settings['cyrillic'], slit_treat_cyr_str['flux_rel'], 'Rel. Flux, -') ; 1252 codepage
 if acttime then begin
     plot, x_arg, flux, xrange = xrange, xstyle = 1, xtickformat='asu_julday_tick', xtickinterval = xtickinterval $
         , xmargin = global['xmargin'], ymargin = global['ymargin'], xgridstyle = 1, xticklen = 1 $

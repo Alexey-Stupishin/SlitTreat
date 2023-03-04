@@ -118,6 +118,7 @@ compile_opt idl2
 
 common G_ASS_SLIT_WIDGET, global
 common G_ASS_SLIT_WIDGET_SET, settings
+common G_ASS_SLIT_WIDGET_CYRILLIC_STRINGS, slit_treat_cyr_str
 
 if global['data_list'] eq !NULL then return
 sz = size(global['data_list'])
@@ -237,7 +238,7 @@ x_arg = xrange
 yrange = [y0, y1]
 y_arg = yrange
 
-title = asu_lang_convert(settings['cyrillic'], ' ”гл. с.', 'arcsec') ; 1252 codepage
+title = asu_lang_convert(settings['cyrillic'], slit_treat_cyr_str['arcsec'], 'arcsec') 
 asu_tvplot_as, global['byte_list', *, *, p], x_arg, y_arg, xrange = xrange, yrange = yrange $
                 , xmargin = global['xmargimg'], ymargin = global['ymargimg'] $
                 , color = settings['colorplot'] $

@@ -15,4 +15,5 @@ Please read [Tutorial](https://github.com/Alexey-Stupishin/StilTreat/blob/main/S
 ## Update History
 * 23 Nov 2022: Create
 * 25 Nov 2022: Release v.1.3.22.1125 (rev.662)
-* 17 Feb 2022: Cyrillic, font size, back/front colors
+* 17 Feb 2023: Cyrillic, font size, back/front colors
+* 04 Mar 2023: Cyrillic font updates

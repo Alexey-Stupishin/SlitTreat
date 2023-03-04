@@ -701,6 +701,7 @@ resolve_routine,'slittreat_widget_slit',/compile_full_file, /either
 resolve_routine,'asu_cyrillic_convert',/compile_full_file, /either
 
 asu_cyrillic_init
+SlitTreat_widget_set_cyrillic_strings
 
 asw_widget = hash()
 global = hash()
